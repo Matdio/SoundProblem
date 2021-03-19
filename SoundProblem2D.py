@@ -1,6 +1,5 @@
 import pgzrun
 from sympy import Point, Circle, Line, Ray
-import random
 
 WIDTH = 800
 HEIGHT = 800
@@ -10,10 +9,12 @@ distance = 25
 ear1 = ((WIDTH/2) - (distance/2), HEIGHT/2)
 ear2 = ((WIDTH/2) + (distance/2), HEIGHT/2)
 
+step = 5 #distance between generated points
+pointAmount = 50 #How many points are generated per side of the line
 
-point1 = (int(random.randrange(WIDTH)),int(random.randrange(HEIGHT)))
+
+point1 = (0,0)
 points = []
-pos1 = (0,0)
 
 mousedown = 0
 
@@ -30,7 +31,8 @@ def on_mouse_move(pos):
     pos1 = pos
     
 def update():
-    global pos1
+    global step
+    global pointAmount
     global mousedown
     global points
     if mousedown == 1:
@@ -38,15 +40,8 @@ def update():
         d1 = ((ear1[0] - point1[0])**2 + (ear1[1] - point1[1])**2)**0.5
         d2 = ((ear2[0] - point1[0])**2 + (ear2[1] - point1[1])**2)**0.5
         points = []
-        step = 5
-        pointAmount = 50
-  
         for i in range(pointAmount):
-            checkPoint(i*step, d1, d2)  
-
-
-
-
+            checkPoint(i*step, d1, d2)
         
         
     
@@ -69,7 +64,10 @@ def checkPoint(radius, d1, d2):
     intersections = cSmol.intersection(cBig)
     for i in range(len(intersections)):
         points.append(intersections[i].coordinates)
-        print(abs(d2 - d1))
+        dis1 = ((ear1[0] - intersections[i][0])**2 + (ear1[1] - intersections[i][1])**2)**0.5
+        dis2 = ((ear2[0] - intersections[i][0])**2 + (ear2[1] - intersections[i][1])**2)**0.5
+        disr = abs(dis1 - dis2)
+        print(disr)
     
     
 def draw():
@@ -82,17 +80,16 @@ def draw():
     distance1 = ((ear1[0] - point1[0])**2 + (ear1[1] - point1[1])**2)**0.5
     distance2 = ((ear2[0] - point1[0])**2 + (ear2[1] - point1[1])**2)**0.5
     if distance1 < distance2:
-        screen.draw.circle(point1, int(distance1), (0,0,0))
+        screen.draw.circle(point1, distance1, (0,0,0))
     else:
-        screen.draw.circle(point1, int(distance2), (0,0,0))
+        screen.draw.circle(point1, distance2, (0,0,0))
     screen.draw.text("d1 :" + str(int(distance1)), (0,0), color = (0,0,0), fontsize=32)
     screen.draw.text("d2 :" + str(int(distance2)), (0,32), color = (0,0,0), fontsize=32)
     screen.draw.text("dr :" + str(abs(distance1 - distance2)), (0,64), color = (0,0,0), fontsize=32)
     for i in range(len(points)):
+
         screen.draw.filled_circle(points[i], 1, (0,255,0))
     
-
-
+    
     
 pgzrun.go()
-
